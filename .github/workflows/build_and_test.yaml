@@ -24,13 +24,13 @@ jobs:
     - name: Build
       run: cmake --build ${{runner.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    - name: Test (Unix)
-      if: ${{ matrix.os }} != windows-latest
+    - if: ${{ matrix.os }} != windows-latest
+      name: Test (Unix)
       run: ${{runner.workspace}}/build/bin/unit_test
 
 
-    - name: Test (Windows)
-      if: ${{ matrix.os }} == windows-latest
+    - if: ${{ matrix.os }} == windows-latest
+      name: Test (Windows)
       run: ${{runner.workspace}}/build/bin/unit_test.exe
 
     - name: Publish Artifact
