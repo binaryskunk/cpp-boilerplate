@@ -24,8 +24,14 @@ jobs:
     - name: Build
       run: cmake --build ${{runner.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    - name: Test
+    - name: Test (Unix)
+      if: ${{ matrix.os }} != windows-latest
       run: ${{runner.workspace}}/build/bin/unit_test
+
+
+    - name: Test (Windows)
+      if: ${{ matrix.os }} == windows-latest
+      run: ${{runner.workspace}}/build/bin/unit_test.exe
 
     - name: Publish Artifact
       uses: actions/upload-artifact@v4
