@@ -1,0 +1,34 @@
+name: Build and test
+on:
+  push:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        buildType: [Debug, Release]
+    env:
+      BUILD_TYPE: ${{ matrix.buildType }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+
+    - name: Configure
+      run: cmake -B ${{runner.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      run: cmake --build ${{runner.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Test
+      run: ${{runner.workspace}}/build/bin/unit_test
+
+    - name: Publish Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: "${{ matrix.buildType }}-${{ matrix.os }}"
+        path: ${{runner.workspace}}/build/bin
