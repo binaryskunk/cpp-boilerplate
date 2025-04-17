@@ -31,10 +31,21 @@ jobs:
 
     - if: matrix.os == 'windows-latest'
       name: Test (Windows)
-      run: ${{runner.workspace}}/build/bin/unit_test.exe
+      run: ${{runner.workspace}}/build/bin/${{env.BUILD_TYPE}}/unit_test.exe
+
+    - if: matrix.os != 'windows-latest'
+      name: Create Artifact (Unix)
+      run: |
+        cp -vr ${{runner.workspace}}/build/bin ${{runner.workspace}}/build/artifact
+
+    - if: matrix.os == 'windows-latest'
+      name: Create Artifact (Windows)
+      shell: bash
+      run: |
+        cp -vr ${{runner.workspace}}/build/bin/${{env.BUILD_TYPE}} ${{runner.workspace}}/build/artifact
 
     - name: Publish Artifact
       uses: actions/upload-artifact@v4
       with:
         name: "${{ matrix.buildType }}-${{ matrix.os }}"
-        path: ${{runner.workspace}}/build/bin
+        path: ${{runner.workspace}}/build/artifact
