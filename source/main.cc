@@ -3,7 +3,7 @@
 
 #include <boilerplate/add.hh>
 
-auto main() -> int { return boilerplate::add(1, 1); }
+auto main() -> int { return boilerplate::add(2, 2); }
 
 /*
  * Copyright (c) 2025 Lavínia "BinarySkunk" Rodrigues
