@@ -1,8 +1,8 @@
 // Copyright (c) 2025 Lavínia "BinarySkunk" Rodrigues
 // See end of file for extended copyright information.
 
-#ifndef BOILERPLATE_ADD_HH_
-#define BOILERPLATE_ADD_HH_
+#ifndef INCLUDE_BOILERPLATE_ADD_HH_
+#define INCLUDE_BOILERPLATE_ADD_HH_
 
 namespace boilerplate {
 
@@ -10,7 +10,7 @@ auto add(int a, int b) -> int;
 
 }
 
-#endif
+#endif  // INCLUDE_BOILERPLATE_ADD_HH_
 
 /*
  * Copyright (c) 2025 Lavínia "BinarySkunk" Rodrigues

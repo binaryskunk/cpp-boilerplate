@@ -5,11 +5,9 @@
 
 namespace boilerplate {
 
-auto add(int a, int b) -> int {
-  return a + b;
-}
+auto add(int a, int b) -> int { return a + b; }
 
-}
+}  // namespace boilerplate
 
 /*
  * Copyright (c) 2025 Lavínia "BinarySkunk" Rodrigues
