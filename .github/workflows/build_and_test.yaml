@@ -8,45 +8,63 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
+
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [windows, macos, ubuntu]
+        compiler: [gcc, clang, msvc]
         buildType: [Debug, Release]
+
+        exclude:
+        - os: windows
+          compiler: gcc
+
+        - os: ubuntu
+          compiler: msvc
+
+        - os: macos
+          compiler: msvc
+
+        - os: macos
+          compiler: gcc
+
     env:
       BUILD_TYPE: ${{ matrix.buildType }}
+
+      ARTIFACT_COPY_CMD: ${{ matrix.os == 'windows' && 'Copy-Item -Path "${{runner.workspace}}/build/bin/${{env.BUILD_TYPE}}" -Destination "${{runner.workspace}}/build/artifact" -recurse -Force' || 'cp -vr ${{runner.workspace}}/build/bin ${{runner.workspace}}/build/artifact' }}
+      UNIT_TEST_EXE_NAME: ${{ matrix.os == 'windows' && 'unit_test.exe' || 'unit_test' }}
+
+      CC: ${{ matrix.compiler }}
+      CXX: ${{ matrix.compiler == 'gcc' && 'g++' || 'clang++' }}
+
+      CC_CMD: ${{ matrix.os == 'windows' && '' || 'export CC=${{ env.CC }}' }}
+      CXX_CMD: ${{ matrix.os == 'windows' && '' || 'export CXX=${{ env.CXX }}' }}
+
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: 'recursive'
 
     - name: Configure
-      run: cmake -B ${{runner.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: |
+        ${{ env.CC_CMD }}
+        ${{ env.CXX_CMD }}
+
+        cmake -B ${{runner.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
       run: cmake --build ${{runner.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    - if: matrix.os != 'windows-latest'
-      name: Test (Unix)
-      run: ${{runner.workspace}}/build/bin/unit_test
+    - name: Test
+      run: ${{runner.workspace}}/build/bin/${{ env.UNIT_TEST_EXE_NAME }}
 
-
-    - if: matrix.os == 'windows-latest'
-      name: Test (Windows)
-      run: ${{runner.workspace}}/build/bin/${{env.BUILD_TYPE}}/unit_test.exe
-
-    - if: matrix.os != 'windows-latest'
-      name: Create Artifact (Unix)
-      run: |
-        cp -vr ${{runner.workspace}}/build/bin ${{runner.workspace}}/build/artifact
-
-    - if: matrix.os == 'windows-latest'
-      name: Create Artifact (Windows)
-      run: |
-        Copy-Item -Path "${{runner.workspace}}/build/bin/${{env.BUILD_TYPE}}" -Destination "${{runner.workspace}}/build/artifact" -recurse -Force
+    - name: Create Artifact
+      run: ${{ env.ARTIFACT_COPY_CMD }}
 
     - name: Publish Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: "${{ matrix.buildType }}-${{ matrix.os }}"
+        name: "${{ matrix.os }}-${{ matrix.compiler }}-${{ matrix.buildType == 'Release' && 'release' || 'debug' }}"
         path: ${{runner.workspace}}/build/artifact
