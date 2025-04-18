@@ -39,22 +39,21 @@ jobs:
       with:
         submodules: 'recursive'
 
-    - name: Set Compiler (Windows)
-      if: ${{ matrix.os == 'windows' }}
+    - name: Configure (Windows)
       run: |
         if ('${{ matrix.compiler }}' -ne 'msvc') {
           $env:CC = '${{ env.C_COMPILER }}'
           $env:CXX = '${{ env.CXX_COMPILER }}'
         }
 
-    - name: Set Compiler (Linux/macOS)
-      if: ${{ matrix.os != 'windows' }}
-      run: |
-        export CC=${{ env.C_COMPILER }}
-        export CXX=${{ env.CXX_COMPILER }}
+        cmake -B ${{runner.workspace}}/build -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} ${{ matrix.compiler != 'msvc' && '-G Ninja' }}
 
-    - name: Configure
-      run: cmake -B ${{runner.workspace}}/build -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} ${{ matrix.compiler != 'msvc' && '-G Ninja' }}
+    - name: Configure (Linux/macOS)
+      run: |
+        export CC='${{ env.C_COMPILER }}'
+        export CXX='${{ env.CXX_COMPILER }}'
+
+        cmake -B ${{runner.workspace}}/build -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} ${{ matrix.compiler != 'msvc' && '-G Ninja' }}
 
     - name: Build
       run: cmake --build ${{runner.workspace}}/build --config ${{ matrix.buildType }}
