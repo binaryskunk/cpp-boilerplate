@@ -32,6 +32,7 @@ jobs:
 
     env:
       BUILD_TYPE: ${{ matrix.buildType }}
+      BUILD_TYPE_DIR: ${{ matrix.buildType }}/
 
       C_COMPILER: ${{ matrix.compiler }}
       CXX_COMPILER: ${{ matrix.compiler == 'gcc' && 'g++' || 'clang++' }}
@@ -62,7 +63,7 @@ jobs:
       run: cmake --build ${{runner.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Test
-      run: ${{runner.workspace}}/build/bin/unit_test${{ matrix.os == 'windows' && '.exe' || '' }}
+      run: ${{runner.workspace}}/build/bin/${{ matrix.os == 'windows' && env.BUILD_TYPE_DIR }}unit_test${{ matrix.os == 'windows' && '.exe' || '' }}
 
     - name: Create Artifact (Windows)
       if: ${{ matrix.os == 'windows' }}
