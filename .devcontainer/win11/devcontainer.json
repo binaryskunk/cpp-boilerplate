@@ -1,0 +1,6 @@
+{
+  "name": "win11",
+  "service": "win11",
+  "forwardPorts": [8006],
+  "dockerComposeFile": "../../devcontainer-compose.yaml"
+}
