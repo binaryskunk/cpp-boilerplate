@@ -58,20 +58,22 @@ jobs:
     - name: Build
       run: cmake --build ${{runner.workspace}}/build --config ${{ matrix.buildType }}
 
-    - name: Test (Windows)
-      if: ${{ matrix.os == 'windows' }}
+    - name: Test (MSVC)
+      if: ${{ matrix.compiler == 'msvc' }}
       run: ${{runner.workspace}}/build/bin/${{ matrix.buildType }}/unit_test.exe
 
-    - name: Test (Linux/macOS)
-      if: ${{ matrix.os != 'windows' }}
-      run: ${{runner.workspace}}/build/bin/unit_test
+    - name: Test (GCC/Clang)
+      if: ${{ matrix.compiler != 'msvc' }}
+      run: ${{runner.workspace}}/build/bin/unit_test${{ matrix.os == 'windows' && '.exe' || '' }}
 
-    - name: Create Artifact (Windows)
-      if: ${{ matrix.os == 'windows' }}
-      run: Copy-Item -Path "${{runner.workspace}}/build/bin/${{ matrix.buildType }}" -Destination "${{runner.workspace}}/build/artifact" -recurse -Force
+    - name: Create Artifact (MSVC)
+      if: ${{ matrix.compiler == 'msvc' }}
+      shell: bash
+      run: cp -vr ${{ runner.workspace }}/build/bin/${{ matrix.buildType }} ${{ runner.workspace }}/build/artifact
 
-    - name: Create Artifact (Linux/macOS)
-      if: ${{ matrix.os != 'windows' }}
+    - name: Create Artifact (GCC/Clang)
+      if: ${{ matrix.compiler != 'msvc' }}
+      shell: bash
       run: cp -vr ${{runner.workspace}}/build/bin ${{runner.workspace}}/build/artifact
 
     - name: Publish Artifact
