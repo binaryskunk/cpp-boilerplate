@@ -41,16 +41,16 @@ jobs:
       with:
         submodules: 'recursive'
 
-    - if: ${{ matrix.os == 'windows' }}
-      name: Set Compiler (Windows)
+    - name: Set Compiler (Windows)
+      if: ${{ matrix.os == 'windows' }}
       run: |
-        if (${{ matrix.compiler }} -ne 'msvc') {
+        if ('${{ matrix.compiler }}' -ne 'msvc') {
           $env:CC = '${{ env.C_COMPILER }}'
           $env:CXX = '${{ env.CXX_COMPILER }}'
         }
 
-    - if: ${{ matrix.os != 'windows' }}
-      name: Set Compiler (Linux/macOS)
+    - name: Set Compiler (Linux/macOS)
+      if: ${{ matrix.os != 'windows' }}
       run: |
         export CC=${{ env.C_COMPILER }}
         export CXX=${{ env.CXX_COMPILER }}
