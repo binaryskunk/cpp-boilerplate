@@ -47,7 +47,7 @@ jobs:
     - if: ${{ matrix.os == 'windows' }}
       name: Set Compiler (Windows)
       run: |
-        if (${{ matrix.compiler -ne 'msvc' }}) {
+        if (${{ matrix.compiler }} -ne 'msvc') {
           $env:CC = '${{ env.C_COMPILER }}'
           $env:CXX = '${{ env.CXX_COMPILER }}'
         }
