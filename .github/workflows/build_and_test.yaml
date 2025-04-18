@@ -64,8 +64,13 @@ jobs:
     - name: Test
       run: ${{runner.workspace}}/build/bin/unit_test${{ matrix.os == 'windows' && '.exe' || '' }}
 
-    - name: Create Artifact
-      run: ${{ matrix.os == 'windows' && 'Copy-Item -Path "${{runner.workspace}}/build/bin/${{ matrix.buildType }}" -Destination "${{runner.workspace}}/build/artifact" -recurse -Force' || 'cp -vr ${{runner.workspace}}/build/bin ${{runner.workspace}}/build/artifact' }}
+    - name: Create Artifact (Windows)
+      if: ${{ matrix.os == 'windows' }}
+      run: Copy-Item -Path "${{runner.workspace}}/build/bin/${{ matrix.buildType }}" -Destination "${{runner.workspace}}/build/artifact" -recurse -Force
+
+    - name: Create Artifact (Linux/macOS)
+      if: ${{ matrix.os != 'windows' }}
+      run: cp -vr ${{runner.workspace}}/build/bin ${{runner.workspace}}/build/artifact
 
     - name: Publish Artifact
       uses: actions/upload-artifact@v4
