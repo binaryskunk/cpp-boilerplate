@@ -40,6 +40,7 @@ jobs:
         submodules: 'recursive'
 
     - name: Configure (Windows)
+      if: ${{ matrix.os == 'windows' }}
       run: |
         if ('${{ matrix.compiler }}' -ne 'msvc') {
           $env:CC = '${{ env.C_COMPILER }}'
@@ -49,6 +50,7 @@ jobs:
         cmake -B ${{runner.workspace}}/build -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} ${{ matrix.compiler != 'msvc' && '-G Ninja' }}
 
     - name: Configure (Linux/macOS)
+      if: ${{ matrix.os != 'windows' }}
       run: |
         export CC='${{ env.C_COMPILER }}'
         export CXX='${{ env.CXX_COMPILER }}'
