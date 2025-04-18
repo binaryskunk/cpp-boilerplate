@@ -60,9 +60,11 @@ jobs:
       run: cmake --build ${{runner.workspace}}/build --config ${{ matrix.buildType }}
 
     - name: Test (Windows)
+      if: ${{ matrix.os == 'windows' }}
       run: ${{runner.workspace}}/build/bin/${{ matrix.buildType }}/unit_test.exe
 
     - name: Test (Linux/macOS)
+      if: ${{ matrix.os != 'windows' }}
       run: ${{runner.workspace}}/build/bin/unit_test
 
     - name: Create Artifact (Windows)
