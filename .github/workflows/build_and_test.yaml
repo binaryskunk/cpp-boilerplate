@@ -31,9 +31,6 @@ jobs:
           compiler: gcc
 
     env:
-      BUILD_TYPE: ${{ matrix.buildType }}
-      BUILD_TYPE_DIR: ${{ matrix.buildType }}/
-
       C_COMPILER: ${{ matrix.compiler }}
       CXX_COMPILER: ${{ matrix.compiler == 'gcc' && 'g++' || 'clang++' }}
 
@@ -57,13 +54,16 @@ jobs:
         export CXX=${{ env.CXX_COMPILER }}
 
     - name: Configure
-      run: cmake -B ${{runner.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ${{ matrix.compiler != 'msvc' && '-G Ninja' }}
+      run: cmake -B ${{runner.workspace}}/build -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} ${{ matrix.compiler != 'msvc' && '-G Ninja' }}
 
     - name: Build
-      run: cmake --build ${{runner.workspace}}/build --config ${{env.BUILD_TYPE}}
+      run: cmake --build ${{runner.workspace}}/build --config ${{ matrix.buildType }}
 
-    - name: Test
-      run: ${{runner.workspace}}/build/bin/${{ matrix.os == 'windows' && env.BUILD_TYPE_DIR }}unit_test${{ matrix.os == 'windows' && '.exe' || '' }}
+    - name: Test (Windows)
+      run: ${{runner.workspace}}/build/bin/${{ matrix.buildType }}/unit_test.exe
+
+    - name: Test (Linux/macOS)
+      run: ${{runner.workspace}}/build/bin/unit_test
 
     - name: Create Artifact (Windows)
       if: ${{ matrix.os == 'windows' }}
