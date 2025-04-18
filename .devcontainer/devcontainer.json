@@ -1,0 +1,4 @@
+{
+  "image": "mcr.microsoft.com/windows:20H2-amd64",
+  "features": {}
+}
