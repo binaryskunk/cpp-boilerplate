@@ -56,7 +56,7 @@ jobs:
         export CXX=${{ env.CXX_COMPILER }}
 
     - name: Configure
-      run: cmake -B ${{runner.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -B ${{runner.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ${{ matrix.compiler != 'msvc' && '-G Ninja' }}
 
     - name: Build
       run: cmake --build ${{runner.workspace}}/build --config ${{env.BUILD_TYPE}}
