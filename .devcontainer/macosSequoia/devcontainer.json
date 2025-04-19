@@ -1,6 +1,0 @@
-{
-  "name": "macosSequoia",
-  "service": "macosSequoia",
-  "forwardPorts": [50922],
-  "dockerComposeFile": "../../devcontainer-compose.yaml"
-}
